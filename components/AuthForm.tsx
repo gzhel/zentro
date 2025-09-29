@@ -12,7 +12,7 @@ import { authFormSchema } from "@/lib/utils";
 import CustomInput from "@/components/CustomInput";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { signIn, signUp } from "@/lib/actions/user.actions";
+import { getLoggedInUser, signIn, signUp } from "@/lib/actions/user.actions";
 
 const AuthForm = ({ type }: { type: string }) => {
   const router = useRouter();
@@ -31,6 +31,14 @@ const AuthForm = ({ type }: { type: string }) => {
     defaultValues: {
       email: "",
       password: "",
+      firstName: "",
+      lastName: "",
+      address1: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      dateOfBirth: "",
+      ssn: "",
     },
   });
 
@@ -40,19 +48,18 @@ const AuthForm = ({ type }: { type: string }) => {
       // Sign up with Appwrite & create plain link token
 
       if (type === "sign-up") {
-        const newUser = await signUp(data);
+        const newUser = await signUp(data as SignUpParams);
         setUser(newUser);
       }
 
-      if (type === "sign-in") {
+      if (type === "sign-in" && data.email && data.password) {
         const response = await signIn({
-          email: data.email,
-          password: data.password,
+          email: data.email ?? "",
+          password: data.password ?? "",
         });
-
-        // if (response) {
-        //   router.push("/");
-        // }
+        if (response) {
+          router.push("/");
+        }
       }
     } catch (error) {
       console.log(error);
