@@ -4,9 +4,60 @@ import qs from "query-string";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
+type PlaidPrimary =
+  | "FOOD_AND_DRINK"
+  | "GENERAL_MERCHANDISE"
+  | "TRANSPORTATION"
+  | "TRAVEL"
+  | "LOAN_PAYMENTS"
+  | "INCOME"
+  | "BANK_FEES"
+  | "TRANSFER"
+  | "ENTERTAINMENT"
+  | "HEALTHCARE"
+  | "RENT_AND_UTILITIES"
+  | "PERSONAL_CARE"
+  | "GENERAL_SERVICES"
+  | "GOVERNMENT_AND_NON_PROFIT"
+  | "HOME"
+  | "INVESTMENT"
+  | "KIDS"
+  | "PETS"
+  | "TAXES"
+  | "EDUCATION";
+
+const PRIMARY_LABELS: Record<PlaidPrimary, string> = {
+  FOOD_AND_DRINK: "Food and Drink",
+  GENERAL_MERCHANDISE: "General Merchandise",
+  TRANSPORTATION: "Transportation",
+  TRAVEL: "Travel",
+  LOAN_PAYMENTS: "Loan Payments",
+  INCOME: "Income",
+  BANK_FEES: "Bank Fees",
+  TRANSFER: "Transfer",
+  ENTERTAINMENT: "Entertainment",
+  HEALTHCARE: "Healthcare",
+  RENT_AND_UTILITIES: "Rent & Utilities",
+  PERSONAL_CARE: "Personal Care",
+  GENERAL_SERVICES: "General Services",
+  GOVERNMENT_AND_NON_PROFIT: "Government & Non-profit",
+  HOME: "Home",
+  INVESTMENT: "Investment",
+  KIDS: "Kids",
+  PETS: "Pets",
+  TAXES: "Taxes",
+  EDUCATION: "Education",
+};
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export const formatPlaidCategory = (category: string) => {
+  return Object.entries(PRIMARY_LABELS)
+    .filter(([k, v]) => category === k)
+    .map(([k, v]) => v);
+};
 
 // FORMAT DATE TIME
 export const formatDateTime = (dateString: Date) => {

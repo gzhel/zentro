@@ -1,7 +1,7 @@
 "use server";
 
 import { createAdminClient, createSessionClient } from "@/lib/appwrite";
-import { ID } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 import { cookies } from "next/headers";
 import {
   encryptId,
@@ -10,6 +10,7 @@ import {
 } from "@/lib/utils";
 import {
   CountryCode,
+  LinkTokenCreateRequest,
   ProcessorTokenCreateRequest,
   ProcessorTokenCreateRequestProcessorEnum,
   Products,
@@ -27,6 +28,21 @@ const {
   APPWRITE_BANK_COLLECTION_ID: BANK_COLLECTION_ID,
 } = process.env;
 
+export const getUserInfo = async ({ userId }: getUserInfoProps) => {
+  try {
+    const { database } = await createAdminClient();
+    const user = await database.listDocuments(
+      DATABASE_ID!,
+      USER_COLLECTION_ID!,
+      [Query.equal("userId", [userId])],
+    );
+
+    return parseStringify(user.documents[0]);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const signIn = async ({ email, password }: signInProps) => {
   try {
     const { account } = await createAdminClient();
@@ -41,9 +57,9 @@ export const signIn = async ({ email, password }: signInProps) => {
       secure: true,
     } as any);
 
-    // const user = await getUserInfo({ userId: session.userId });
+    const user = await getUserInfo({ userId: session.userId });
 
-    return parseStringify(session);
+    return parseStringify(user);
   } catch (e) {
     console.log("Error", e);
     throw e;
@@ -111,9 +127,11 @@ export const signUp = async ({ password, ...userData }: SignUpParams) => {
 export async function getLoggedInUser() {
   try {
     const { account } = await createSessionClient();
-    const user = await account.get();
+    const result = await account.get();
+    const user = await getUserInfo({ userId: result.$id });
     return parseStringify(user);
   } catch (e) {
+    console.log(e);
     return null;
   }
 }
@@ -126,24 +144,25 @@ export const logoutAccount = async () => {
 
     await account.deleteSession("current");
   } catch (e) {
+    console.log(e);
     return null;
   }
 };
 
 export const createLinkToken = async (user: User) => {
   try {
-    const tokenParams = {
+    const tokenParams: LinkTokenCreateRequest = {
       user: {
         client_user_id: user.$id,
       },
-      client_name: user.name,
-      products: ["auth"] as Products[],
+      client_name: `${user.firstName} ${user.lastName}`,
+      products: [Products.Auth, Products.Transactions],
+      country_codes: [CountryCode.Us],
       language: "en",
-      country_codes: ["US"] as CountryCode[],
     };
 
-    const response = await plaidClient.linkTokenCreate(tokenParams);
-    return parseStringify({ linkToken: response.data.link_token });
+    const { data } = await plaidClient.linkTokenCreate(tokenParams);
+    return parseStringify({ linkToken: data.link_token });
   } catch (e) {
     console.log(e);
   }
@@ -228,5 +247,37 @@ export const exchangePublicToken = async ({
     });
   } catch (e) {
     console.error("An error occurred while creating exchanging token:", e);
+  }
+};
+
+export const getBanks = async ({ userId }: getBanksProps) => {
+  try {
+    const { database } = await createAdminClient();
+    const banks = await database.listDocuments(
+      DATABASE_ID!,
+      BANK_COLLECTION_ID!,
+      [Query.equal("userId", [userId])],
+    );
+
+    return parseStringify(banks.documents);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getBank = async ({ documentId }: getBankProps) => {
+  try {
+    const { database } = await createAdminClient();
+    const bank = await database.listDocuments(
+      DATABASE_ID!,
+      BANK_COLLECTION_ID!,
+      [Query.equal("$id", [documentId])],
+    );
+
+    console.log("getBank", bank);
+
+    return parseStringify(bank.documents[0]);
+  } catch (e) {
+    console.log(e);
   }
 };
