@@ -4,15 +4,17 @@ import { Client, Account, Databases, Users } from "node-appwrite";
 import { cookies } from "next/headers";
 
 export async function createSessionClient() {
-  const sessionId = cookies().get("appwrite-session" as any)?.value;
-  if (!sessionId) {
+  const client = new Client()
+    .setEndpoint(process.env.APPWRITE_ENDPOINT!)
+    .setProject(process.env.APPWRITE_PROJECT!);
+
+  const session = cookies().get("appwrite-session" as any);
+
+  if (!session || !session.value) {
     throw new Error("No session");
   }
 
-  const client = new Client()
-    .setEndpoint(process.env.APPWRITE_ENDPOINT!)
-    .setProject(process.env.APPWRITE_PROJECT!)
-    .setSession(sessionId);
+  client.setSession(session.value);
 
   return {
     get account() {
@@ -25,7 +27,7 @@ export async function createAdminClient() {
   const client = new Client()
     .setEndpoint(process.env.APPWRITE_ENDPOINT!)
     .setProject(process.env.APPWRITE_PROJECT!)
-    .setKey(process.env.NEXT_APPWRITE_KEY!);
+    .setKey(process.env.APPWRITE_API_KEY!);
 
   return {
     get account() {
