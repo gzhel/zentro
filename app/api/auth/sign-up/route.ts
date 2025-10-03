@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 import { signUp } from "@/lib/actions/user.actions";
 
@@ -15,14 +15,35 @@ const schema = z.object({
   password: z.string().min(6),
 });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    const accept = req.headers.get("accept") || "";
+    const isDocumentPost = accept.includes("text/html");
+
+    if (isDocumentPost) {
+      const form = await req.formData();
+      const data = Object.fromEntries(form.entries());
+      const parsed = schema.parse({
+        firstName: String(data.firstName || ""),
+        lastName: String(data.lastName || ""),
+        address1: String(data.address1 || ""),
+        city: String(data.city || ""),
+        state: String(data.state || ""),
+        postalCode: String(data.postalCode || ""),
+        dateOfBirth: String(data.dateOfBirth || ""),
+        ssn: String(data.ssn || ""),
+        email: String(data.email || ""),
+        password: String(data.password || ""),
+      });
+
+      await signUp(parsed); // ставит cookie
+      return;
+    }
+
     const json = await req.json();
-    const data = schema.parse(json);
-
-    const newUser = await signUp(data);
-
-    return NextResponse.json({ ok: true, user: newUser });
+    const parsed = schema.parse(json);
+    const user = await signUp(parsed);
+    return NextResponse.json({ ok: true, user });
   } catch (err: any) {
     console.error("sign-up error", err);
     const message = err?.message ?? "Failed to sign up";

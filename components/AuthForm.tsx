@@ -114,6 +114,9 @@ const AuthForm = ({ type }: { type: "sign-in" | "sign-up" }) => {
           <Form {...form}>
             <form
               method={"post"}
+              action={
+                type === "sign-in" ? "/api/auth/sign-in" : "/api/auth/sign-up"
+              }
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-8"
             >
