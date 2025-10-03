@@ -14,6 +14,22 @@ const Footer = ({ user, type = "desktop" }: FooterProps) => {
     }
   };
 
+  const formatUserEmail = (email: string | undefined) => {
+    if (!email) {
+      return;
+    }
+
+    const splitElement = email.split("@");
+    const [first, second] = splitElement;
+    return (
+      first.slice(0, 2) +
+      "..." +
+      first.slice(first.length - 2, first.length) +
+      "@" +
+      second
+    );
+  };
+
   return (
     <footer className={"footer"}>
       <div className={type === "mobile" ? "footer_name-mobile" : "footer_name"}>
@@ -29,7 +45,7 @@ const Footer = ({ user, type = "desktop" }: FooterProps) => {
           {user?.firstName}
         </h1>
         <p className={"text-14 truncate font-normal text-gray-600"}>
-          {user?.email}
+          {formatUserEmail(user?.email)}
         </p>
       </div>
 

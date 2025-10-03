@@ -76,7 +76,6 @@ declare type Transaction = {
   category: string;
   date: string;
   image: string;
-  type: string;
   $createdAt: string;
   channel: string;
   senderBankId: string;
@@ -329,3 +328,31 @@ declare interface getBankProps {
 declare interface getBankByAccountIdProps {
   accountId: string;
 }
+
+declare type BankAccount = {
+  id: string;
+  availableBalance: number;
+  currentBalance: number;
+  institutionId: string;
+  name: string | null;
+  officialName: string | null;
+  mask: string;
+  type: string;
+  subtype: string;
+  appwriteItemId: string;
+};
+
+declare type UITransaction = {
+  id: string;
+  name: string;
+  amount: number;
+  date: string;
+  paymentChannel?: string;
+  category?: string[] | string | null;
+  type: "debit" | "credit";
+};
+
+declare type GetAccountResult = {
+  data: BankAccount;
+  transactions: Transaction[];
+};

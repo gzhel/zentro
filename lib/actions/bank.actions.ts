@@ -143,7 +143,7 @@ export const getAccount = async ({ appwriteItemId }: getAccountProps) => {
     );
 
     return parseStringify({
-      data: account,
+      data: account as BankAccount,
       transactions: allTransactions,
     });
   } catch (error) {

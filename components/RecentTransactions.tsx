@@ -5,8 +5,9 @@ import { BankTabItem } from "@/components/BankTabItem";
 import BankInfo from "@/components/BankInfo";
 import TransactionsTable from "@/components/TransactionsTable";
 import { Pagination } from "@/components/Pagination";
+import { getAccount } from "@/lib/actions/bank.actions";
 
-const RecentTransactions = ({
+const RecentTransactions = async ({
   accounts,
   transactions = [],
   appwriteItemId,
@@ -14,6 +15,12 @@ const RecentTransactions = ({
 }: RecentTransactionsProps) => {
   const rowsPerPage = 10;
   const totalPages = Math.ceil(transactions.length / rowsPerPage);
+
+  if (!accounts) {
+    return null;
+  }
+
+  const account = await getAccount({ appwriteItemId });
 
   const indexOfLastTransaction = page * rowsPerPage;
   const indexOfFirstTransaction = indexOfLastTransaction - rowsPerPage;
@@ -24,7 +31,7 @@ const RecentTransactions = ({
   );
 
   return (
-    <section className={"recent-transactions"}>
+    <section className={"recent-transactions h-screen"}>
       <header className={"flex items-center justify-between"}>
         <h2 className={"recent-transactions-label"}>Recent transactions</h2>
         <Link
@@ -39,35 +46,39 @@ const RecentTransactions = ({
         <TabsList className={"recent-transactions-tablist"}>
           {accounts?.map((account: Account) => (
             <TabsTrigger key={account.id} value={account.appwriteItemId}>
-              <BankTabItem
-                key={account.id}
-                account={account}
-                appwriteItemId={appwriteItemId}
-              />
+              <Link
+                href={`?id=${account.appwriteItemId}&page=1`}
+                scroll={false}
+                prefetch
+              >
+                <BankTabItem
+                  key={account.id}
+                  account={account}
+                  appwriteItemId={appwriteItemId}
+                />
+              </Link>
             </TabsTrigger>
           ))}
         </TabsList>
 
-        {accounts?.map((account: Account) => (
-          <TabsContent
-            value={account.appwriteItemId}
-            key={account.id}
-            className={"space-y-4"}
-          >
-            <BankInfo
-              account={account}
-              appwriteItemId={appwriteItemId}
-              type={"full"}
-            />
-            <TransactionsTable transactions={currentTransactions} />
+        <TabsContent
+          value={appwriteItemId}
+          key={account?.data.id}
+          className={"space-y-4"}
+        >
+          <BankInfo
+            account={account?.data}
+            appwriteItemId={appwriteItemId}
+            type={"full"}
+          />
+          <TransactionsTable transactions={currentTransactions} />
 
-            {totalPages > 1 && (
-              <div className={"my-4 w-full"}>
-                <Pagination page={page} totalPages={totalPages} />
-              </div>
-            )}
-          </TabsContent>
-        ))}
+          {totalPages > 1 && (
+            <div className={"my-4 w-full"}>
+              <Pagination page={page} totalPages={totalPages} />
+            </div>
+          )}
+        </TabsContent>
       </Tabs>
     </section>
   );
