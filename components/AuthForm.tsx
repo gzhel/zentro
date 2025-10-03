@@ -81,15 +81,15 @@ const AuthForm = ({ type }: { type: string }) => {
 
   return (
     <section className={"auth-form"}>
-      <header className={"flex flex-col gap-5  md:gap-8"}>
+      <header className={"flex flex-col gap-5 md:gap-8"}>
         <Link
           href={"/"}
-          className={"flex mb-12 cursor-pointer items-center gap-1"}
+          className={"flex mb-4 cursor-pointer items-center gap-1"}
         >
           <Image
             src={"/icons/logo.svg"}
-            width={34}
-            height={34}
+            width={42}
+            height={42}
             alt={"Zentro logo"}
           />
           <h1 className={"text-26 font-ibm-plex-serif font-bold text-black-1"}>
@@ -118,7 +118,7 @@ const AuthForm = ({ type }: { type: string }) => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               {type === "sign-up" && (
                 <>
-                  <div className={"flex gap-4"}>
+                  <div className={"flex gap-4 justify-between"}>
                     <CustomInput
                       control={form.control}
                       name={"firstName"}
@@ -147,7 +147,7 @@ const AuthForm = ({ type }: { type: string }) => {
                     placeholder={"Enter your city"}
                   />
 
-                  <div className={"flex gap-4"}>
+                  <div className={"flex gap-4 justify-between"}>
                     <CustomInput
                       control={form.control}
                       name={"state"}
@@ -162,7 +162,7 @@ const AuthForm = ({ type }: { type: string }) => {
                     />
                   </div>
 
-                  <div className={"flex gap-4"}>
+                  <div className={"flex gap-4 justify-between"}>
                     <CustomInput
                       control={form.control}
                       name={"dateOfBirth"}

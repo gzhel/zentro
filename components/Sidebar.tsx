@@ -21,10 +21,10 @@ const Sidebar = ({ user }: SidebarProps) => {
         >
           <Image
             src={"/icons/logo.svg"}
-            width={34}
-            height={34}
+            width={48}
+            height={48}
             alt={"Zentro logo"}
-            className={"size-[24px] max-xl:size-14"}
+            className={"size-[48px] max-xl:size-14"}
           />
           <h1 className={"sidebar-logo"}>Zentro</h1>
         </Link>
