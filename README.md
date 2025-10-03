@@ -37,37 +37,11 @@ UI is built with **Tailwind + Radix UI**; forms use **React Hook Form + Zod**; c
 
 ---
 
-## Environment Variables
+## How to run the application locally
 
-Create `.env`:
-
-```bash
-# App URL
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# Appwrite (client, if needed)
-NEXT_PUBLIC_APPWRITE_ENDPOINT=https://<your-appwrite>/v1
-NEXT_PUBLIC_APPWRITE_PROJECT_ID=<project-id>
-
-# Appwrite (server)
-APPWRITE_ENDPOINT=https://<your-appwrite>/v1
-APPWRITE_PROJECT_ID=<project-id>
-APPWRITE_API_KEY=<server-key>
-
-# Plaid
-PLAID_CLIENT_ID=<client-id>
-PLAID_SECRET=<secret>
-PLAID_ENV=sandbox # sandbox | development | production
-
-# Dwolla
-DWOLLA_KEY=<key>
-DWOLLA_SECRET=<secret>
-DWOLLA_ENV=sandbox # sandbox | production
-
-# Sentry (optional)
-SENTRY_DSN=<dsn>
-SENTRY_AUTH_TOKEN=<token>
-```
+1. Use `npm install` in terminal
+2. Remove `.example` from `.env.example`
+3. Use `npm run dev` in terminal
 
 ---
 
@@ -150,4 +124,4 @@ Left navigation:
 
 ## License
 
-MIT (or your preferred license).
+MIT.
