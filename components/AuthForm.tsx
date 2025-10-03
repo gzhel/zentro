@@ -12,12 +12,11 @@ import { authFormSchema } from "@/lib/utils";
 import CustomInput from "@/components/CustomInput";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { signIn, signUp } from "@/lib/actions/user.actions";
 import PlaidLink from "@/components/PlaidLink";
 
-const AuthForm = ({ type }: { type: string }) => {
+const AuthForm = ({ type }: { type: "sign-in" | "sign-up" }) => {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const typeLabel = type === "sign-in" ? "Sign In" : "Sign Up";
 
@@ -46,34 +45,32 @@ const AuthForm = ({ type }: { type: string }) => {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      if (type === "sign-up") {
-        const userData = {
-          firstName: data.firstName!,
-          lastName: data.lastName!,
-          address1: data.address1!,
-          city: data.city!,
-          state: data.state!,
-          postalCode: data.postalCode!,
-          dateOfBirth: data.dateOfBirth!,
-          ssn: data.ssn!,
-          email: data.email!,
-          password: data.password!,
-        };
-        const newUser = await signUp(userData as SignUpParams);
-        setUser(newUser);
+      const url =
+        type === "sign-in" ? "/api/auth/sign-in" : "/api/auth/sign-up";
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const json = await response.json().catch(() => ({}));
+        throw new Error(json?.error || "Request failed");
       }
 
-      if (type === "sign-in" && data.email && data.password) {
-        const response = await signIn({
-          email: data.email ?? "",
-          password: data.password ?? "",
-        });
-        if (response) {
-          router.push("/");
-        }
+      const json = await response.json();
+
+      if (type === "sign-up") {
+        setUser(json.user);
       }
-    } catch (error) {
-      console.log(error);
+
+      if (type === "sign-in") {
+        router.push("/");
+      }
+    } catch (error: any) {
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
