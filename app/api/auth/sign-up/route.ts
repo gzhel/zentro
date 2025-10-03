@@ -2,6 +2,9 @@ import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 import { signUp } from "@/lib/actions/user.actions";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const schema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
@@ -45,7 +48,14 @@ export async function POST(req: NextRequest) {
     const user = await signUp(parsed);
     return NextResponse.json({ ok: true, user });
   } catch (err: any) {
-    console.error("sign-up error", err);
+    const payload = {
+      ok: false,
+      message: err?.message ?? "Unknown error",
+      name: err?.name,
+      stack: err?.stack,
+      cause: err?.cause,
+    };
+    console.error("sign-up 500", payload);
     const message = err?.message ?? "Failed to sign up";
     return NextResponse.json({ ok: false, error: message }, {
       status: 400,
